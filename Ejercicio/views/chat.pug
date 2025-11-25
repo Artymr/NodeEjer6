@@ -40,4 +40,8 @@ block content
       const item = document.createElement('li');
       item.textContent = msg.user + ": " + msg.text;
       messages.appendChild(item);
+
+      if (messages.children.length > 10) {
+        messages.removeChild(messages.firstChild);
+      }
     });
