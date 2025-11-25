@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  h1= title
+
+  //Error
+  if error
+    p(style="color:red")= error
+
+  form(action="/login", method="post")
+    div
+      label(for="username") Usuario:
+      input(type="text", name="username", id="username", required)
+    div
+      label(for="password") Contraseña:
+      input(type="password", name="password", id="password", required)
+    div
+      button(type="submit") Entrar
+      button(type="button", onclick="window.location='/'") Volver
+

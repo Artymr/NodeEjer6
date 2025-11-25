@@ -1,0 +1,41 @@
+extends layout
+
+block content
+  h1 Chat
+  #chat
+    ul#messages
+    form#form(action="")
+      input#input(type="text" autocomplete="off" placeholder="Escribe un mensaje...")
+      button Enviar
+  script(src="/socket.io/socket.io.js")
+  script.
+    var socket = io()({
+        auth: {
+            usuario: "#{usuario}"
+        }
+    })
+    var form = document.getElementById('form');
+    var input = document.getElementById('input');
+    var messages = document.getElementById('messages');
+
+    socket.on('mensajes', function(mensajes) {
+      mensajes.forEach(function(mensaje) {
+        var item = document.createElement('li');
+        item.textContent = mensaje.usuario + ': ' + mensaje.mensaje + ' (' + mensaje.fecha + ')';
+        messages.appendChild(item);
+      });
+    });
+
+    socket.on('mensajeNuevo', function(mensaje) {
+      var item = document.createElement('li');
+      item.textContent = mensaje.usuario + ': ' + mensaje.mensaje + ' (' + mensaje.fecha + ')';
+      messages.appendChild(item);
+    });
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (input.value) {
+        socket.emit('mensajeNuevo', input.value);
+        input.value = '';
+      }
+    });

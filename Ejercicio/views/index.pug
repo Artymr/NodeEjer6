@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+    each el in elementos
+      if el.tipo === 'imagen'
+        li
+          img(src=el.url, alt=el.descripcion, width="150")
+          p= el.descripcion
+      else if el.tipo === 'texto'
+        li
+          p= el.contenido
+
+  a(href='/login')
+    button Hacer login

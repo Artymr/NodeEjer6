@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1 Zona Restringida
+  p Bienvenido, #{user}!
+  button(type="button", onclick="window.location='/restringida/logout'") Cerrar sesión
+  p
+    a(href="/chat") Ir al chat
+
