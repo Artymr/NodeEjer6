@@ -8,10 +8,6 @@ var app = require('../app');
 var debug = require('debug')('ejercicio:server');
 var http = require('http');
 
-/////Servidor HTTP
-
-var server = http.createServer(app);
-
 //LO NUEVO DE SOCKET.IO VVVVVVVVV
 const { Server } = require("socket.io");
 const io = new Server(server);

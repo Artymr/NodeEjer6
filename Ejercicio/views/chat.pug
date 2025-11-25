@@ -1,41 +1,31 @@
-extends layout
+extend layout
 
 block content
-  h1 Chat
-  #chat
-    ul#messages
-    form#form(action="")
-      input#input(type="text" autocomplete="off" placeholder="Escribe un mensaje...")
-      button Enviar
+  h1 Chat en Tiempo Real
+  #chat-container
+    #messages
+    form#chat-form(action="", method="post")
+      input#message-input(type="text", autocomplete="off", placeholder="Escribe tu mensaje aquí...")
+      button(type="submit") Enviar
   script(src="/socket.io/socket.io.js")
   script.
-    var socket = io()({
-        auth: {
-            usuario: "#{usuario}"
-        }
-    })
-    var form = document.getElementById('form');
-    var input = document.getElementById('input');
-    var messages = document.getElementById('messages');
+    const socket = io();
 
-    socket.on('mensajes', function(mensajes) {
-      mensajes.forEach(function(mensaje) {
-        var item = document.createElement('li');
-        item.textContent = mensaje.usuario + ': ' + mensaje.mensaje + ' (' + mensaje.fecha + ')';
-        messages.appendChild(item);
-      });
-    });
-
-    socket.on('mensajeNuevo', function(mensaje) {
-      var item = document.createElement('li');
-      item.textContent = mensaje.usuario + ': ' + mensaje.mensaje + ' (' + mensaje.fecha + ')';
-      messages.appendChild(item);
-    });
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('message-input');
+    const messages = document.getElementById('messages');
 
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       if (input.value) {
-        socket.emit('mensajeNuevo', input.value);
+        socket.emit('chat message', input.value);
         input.value = '';
       }
+    });
+
+    socket.on('chat message', function(msg) {
+      const item = document.createElement('li');
+      item.textContent = msg;
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
     });

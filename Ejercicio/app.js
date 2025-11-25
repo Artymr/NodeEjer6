@@ -56,31 +56,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-//nuevo del socket.io VVVVVVVV
-let mensajes = [];
-app.locals.mensajes = mensajes;
 
-const io = app.get('io');
-
-if (io) {
-  io.on('connection', (socket) => {
-    const usuario = socket.handshake.auth.usuario || 'Anonimo';
-
-    socket.emit('mensajes', mensajes);
-
-    socket.on('mensajeNuevo', (msg) => {
-      const mensaje = {
-        usuario: usuario,
-        mensaje: msg,
-        fecha: new Date().toLocaleTimeString()
-      };
-      mensajes.push(mensaje);
-      if (mensajes.length > 10) {
-        mensajes.shift();
-      }
-      io.emit('mensajeNuevo', mensaje);
-    });
-  });
-}
-//nuevo del socket.io ^^^^^^^^^__
 module.exports = app;

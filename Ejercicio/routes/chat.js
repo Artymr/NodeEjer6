@@ -6,8 +6,8 @@ function auth(req, res, next) {
     else res.redirect('/login');
 }
 
-router.get('/', auth, function(req, res, next) {
-    res.render("chat", { usuario: req.session.user });
+router.get('/', auth, function(req, res) {
+    res.render("chat", { user: req.session.user });
 });
 
 module.exports = router;
