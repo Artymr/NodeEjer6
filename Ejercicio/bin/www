@@ -5,14 +5,8 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('ejercicio:server');
+var debug = require('debug')('express-test:server');
 var http = require('http');
-
-//LO NUEVO DE SOCKET.IO VVVVVVVVV
-const { Server } = require("socket.io");
-const io = new Server(server);
-
-app.set('io', io);
 
 /**
  * Get port from environment and store in Express.
@@ -26,6 +20,59 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+
+//TODO LO DE SOCKET
+
+const { Server } = require("socket.io");
+const io = new Server(server);
+
+
+// Recuperar el middleware de sesión que definimos en app.js
+const sessionMiddleware = app.get("sessionMiddleware");
+
+
+io.use((socket, next) => {
+  sessionMiddleware(socket.request, {}, next);
+});
+
+//historial de mensajes
+const history = [];
+const MAX_HISTORY = 50;
+
+//como funcionan las conexiones
+io.on("connection", (socket) => {
+  const user = socket.request.session.user;
+
+  if (!user) {
+    console.log("Usuario no autenticado, desconectando socket");
+    return socket.disconnect(true);
+  }
+
+  console.log("Usuario conectado:", user.username);
+
+  // nviar historial
+  socket.emit("history", history);
+
+  //recibir mensajes
+  socket.on("chat message", (text) => {
+    const msg = {
+      user: user.username,
+      text,
+      ts: Date.now()
+    };
+
+    //guardar en historial
+    history.push(msg);
+    if (history.length > MAX_HISTORY) history.shift();
+
+    //enviar a todos
+    io.emit("chat message", msg);
+  });
+});
+
+
+
 
 /**
  * Listen on provided port, on all network interfaces.
