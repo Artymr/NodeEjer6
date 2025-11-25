@@ -38,7 +38,7 @@ io.use((socket, next) => {
 
 //historial de mensajes
 const history = [];
-const MAX_HISTORY = 50;
+const MAX_HISTORY = 10;
 
 //como funcionan las conexiones
 io.on("connection", (socket) => {

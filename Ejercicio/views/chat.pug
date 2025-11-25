@@ -1,12 +1,13 @@
-extend layout
+extends layout
 
 block content
   h1 Chat en Tiempo Real
   #chat-container
-    #messages
-    form#chat-form(action="", method="post")
+    ul#messages
+    form#chat-form
       input#message-input(type="text", autocomplete="off", placeholder="Escribe tu mensaje aquí...")
       button(type="submit") Enviar
+
   script(src="/socket.io/socket.io.js")
   script.
     const socket = io();
@@ -15,17 +16,28 @@ block content
     const input = document.getElementById('message-input');
     const messages = document.getElementById('messages');
 
+    // enviar mensaje
     form.addEventListener('submit', function(e) {
       e.preventDefault();
-      if (input.value) {
+      if (input.value.trim()) {
         socket.emit('chat message', input.value);
         input.value = '';
       }
     });
 
+    // historial
+    socket.on('history', function(history) {
+      messages.innerHTML = "";
+      history.forEach(msg => {
+        const item = document.createElement('li');
+        item.textContent = msg.user + ": " + msg.text;
+        messages.appendChild(item);
+      });
+    });
+
+    // mensaje en tiempo real
     socket.on('chat message', function(msg) {
       const item = document.createElement('li');
-      item.textContent = msg;
+      item.textContent = msg.user + ": " + msg.text;
       messages.appendChild(item);
-      window.scrollTo(0, document.body.scrollHeight);
     });
