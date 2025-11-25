@@ -3,20 +3,17 @@ var router = express.Router();
 
 /* GET login page. */
 router.get('/', function(req, res, next) {
-  res.render('login', { title: 'Login', error: null });
+  res.render('login', { title: 'Login'});
 });
 
 /* POST login */
 router.post('/', function(req, res, next) {
   const { username, password } = req.body;
+  if (!username) return res.render('login', { title: 'Login', error: 'Username is required' });
 
-  // Aquí iría la lógica de autenticación
-  if (username === 'usuario' && password === 'contraseña') {
-    req.session.user = username;
-    res.redirect('/restringida');
-  } else {
-    res.render('login', { title: 'Login', error: 'El usuario y la contraseña son literalmente "usuario" y "contraseña"' });
-  }
+  req.session.user = { username };
+  res.redirect('/restringida');
 });
+  
 
 module.exports = router;
